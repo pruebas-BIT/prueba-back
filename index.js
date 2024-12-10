@@ -6,6 +6,7 @@ import cors from "cors";
 
 const app = express();
 
+
 //configuracion de variables de entorno
 dotenv.config();
 

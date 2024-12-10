@@ -1,14 +1,19 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
 const rouletteSchema = Schema({
-    Status:{
-        type:String,
-        default:`OFF`,
-        require: true
-    }
-});
+  
+    id: { type: Number,
+         require: true
+ },
+ 
+  Status: {
+    type: Boolean,
+    default: false,
+    require: true,
+  },
+}
+);
 
+const Roulette = model("Roulette", rouletteSchema);
 
-const Roulette = model("Roulette", rouletteSchema)
-
-export default Roulette; 
+export default Roulette;
