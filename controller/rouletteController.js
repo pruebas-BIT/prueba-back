@@ -1,20 +1,6 @@
 import express from "express";
 import Roulette from "../models/roulette.js";
-import { createNewRoulette } from "../services/rouletteService.js";
-
-//import { createNewRoulette } from "../services/rouletteService.js";
-
-// export async function createRoulette(req, res) {
-//   try {
-//     const newRoulette = new Roulette(id, Status);
-//     const { id, Status } = req.body;
-//     await newRoulette.save();
-//     res.status(201).json({ id: newRoulette.id });
-//   } catch (error) {
-//     console.error("Error creating roulette:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// }
+import { createNewRoulette, abrirRuleta } from "../services/rouletteService.js";
 
 
 export async function createRoulette(req, res) {
@@ -27,3 +13,20 @@ export async function createRoulette(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export async function open(req, res) {
+  try {
+    const { id } = req.params;  
+    const result = await abrirRuleta(id);
+    if (result.exito) {
+      res.status(200).json({ mensaje: result.mensaje });
+    } else {
+      res.status(result.codigo).json({ mensaje: result.mensaje });
+    }
+  } catch (error) {
+    console.error('Error al abrir la ruleta:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+}
+
+

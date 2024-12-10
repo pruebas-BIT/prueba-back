@@ -10,24 +10,25 @@ export async function createNewRoulette({ id, Status }) {
     throw new Error("Internal server error");
   }
 }
+
 export const abrirRuleta = async (id) => {
   try {
-    const ruleta = await Roulette.findById(id);
+    const ruleta = await Roulette.findOne({ id: Number(id) });
     if (!ruleta) {
-      return { exito: false, codigo: 404, mensaje: "Ruleta no encontrada" };
+      return { exito: false, codigo: 404, mensaje: 'Ruleta no encontrada' };
     }
-    if (ruleta.Status === "ON") {
+    if (ruleta.Status === true) {
       return {
         exito: false,
         codigo: 400,
-        mensaje: "La ruleta ya está abierta",
+        mensaje: 'La ruleta ya está abierta',
       };
     }
-    ruleta.Status = "ON";
+    ruleta.Status = true;
     await ruleta.save();
-    return { exito: true, mensaje: "Ruleta abierta exitosamente" };
+    return { exito: true, mensaje: 'Ruleta abierta exitosamente' };
   } catch (error) {
-    console.error("Error al abrir la ruleta:", error);
-    return { exito: false, codigo: 500, mensaje: "Error interno del servidor" };
+    console.error('Error al abrir la ruleta:', error);
+    return { exito: false, codigo: 500, mensaje: 'Error interno del servidor' };
   }
 };
