@@ -2,9 +2,19 @@ import Roulette from "../models/roulette.js";
 import Bet from "../models/Bet.js";
 import { Error } from "mongoose";
 
-export async function createNewRoulette({ id, Status }) {
+export async function getRoulette() {
   try {
-    const newRoulette = new Roulette({ id, Status });
+    const roulette = await Roulette.find();
+    return roulette;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+
+export async function createNewRoulette({ id }) {
+  try {
+    const newRoulette = new Roulette({ id });
     await newRoulette.save();
     return newRoulette.id;
   } catch (error) {
@@ -58,7 +68,7 @@ export async function crearApuesta({
     }
 
     const bet = new Bet({
-      rouletteId: roulette._id,
+      rouletteId: roulette.id,
       userId,
       amount,
       betType,
@@ -66,6 +76,49 @@ export async function crearApuesta({
     });
     await bet.save();
     return bet;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function cerrarRuleta(rouletteId) {
+  try {
+    const roulette = await Roulette.findOne({ id: rouletteId, Status: true });
+    if (!roulette) {
+      throw new Error("Ruleta no encontrada o no está abierta");
+    }
+
+    const winningNumber = Math.floor(Math.random() * 37);
+
+    const bets = await Bet.find({ rouletteId: roulette.id });
+    const results = bets.map((bet) => {
+      let payout = 0;
+      if (bet.betType === "number" && bet.betValue === winningNumber) {
+        payout = bet.amount * 5; // 5 veces el dinero apostado
+      } else if (
+        bet.betType === "color" &&
+        ((bet.betValue === "negro" && winningNumber % 2 === 0) ||
+          (bet.betValue === "rojo" && winningNumber % 2 !== 0))
+      ) {
+        payout = bet.amount * 1.8; // 1.8 veces el dinero apostado
+      }
+
+      return {
+        userId: bet.userId,
+        betType: bet.betType,
+        betValue: bet.betValue,
+        amount: bet.amount,
+        payout,
+      };
+    });
+
+    roulette.Status = false;
+    await roulette.save();
+
+    return {
+      winningNumber,
+      results,
+    };
   } catch (error) {
     throw new Error(error.message);
   }

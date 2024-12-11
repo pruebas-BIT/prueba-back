@@ -4,7 +4,22 @@ import {
   createNewRoulette,
   abrirRuleta,
   crearApuesta,
+  cerrarRuleta,
+  getRoulette,
 } from "../services/rouletteService.js";
+
+
+export async function getAllRoulette(req, res) {
+  try {
+    const roulettes = await getRoulette();
+    if (!roulettes || roulettes.length === 0) {
+      return res.status(404).json({ message: 'No roulettes found' });
+    }
+    res.status(200).json(roulettes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 export async function createRoulette(req, res) {
   try {
@@ -43,6 +58,16 @@ export async function createBet(req, res) {
       betValue,
     });
     res.status(201).json(bet);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+export async function rouletteClose(req, res) {
+  try {
+    const { rouletteId } = req.params;
+    const result = await cerrarRuleta(rouletteId);
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

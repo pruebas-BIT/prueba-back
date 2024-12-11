@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 
 const betSchema = new mongoose.Schema({
   rouletteId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Roulette',
+    type: Number,
     required: true,
   },
   userId: {
